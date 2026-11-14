@@ -189,6 +189,48 @@ int playRound(int balance)
             break;
     }
 
+
+    // DEALER'S TURN
+
+    cout << "\nDealer reveals the cards:\n";
+
+    showDealerHand(
+        dealerCards, dealerCount, ranks, suits, false
+    );
+
+
+    int dealerScore = calculateScore(
+        dealerCards, dealerCount, values, ranks
+    );
+
+    bool dealerBlackjack = (dealerScore == 21 && dealerCount == 2);
+
+    cout << "Dealer's score: " << dealerScore << endl;
+
+
+    // Dealer draws until reaching 17
+    while (playerScore <= 21 && dealerScore < 17 && nextCard < 52)
+    {
+        dealerCards[dealerCount] = nextCard;
+        dealerCount++;
+        nextCard++;
+
+        cout << "Dealer draws: ";
+
+        showCard(
+            dealerCards[dealerCount - 1], ranks, suits
+        );
+
+        cout << endl;
+
+
+        dealerScore = calculateScore(
+            dealerCards, dealerCount, values, ranks
+        );
+
+        cout << "Dealer's score: " << dealerScore << endl;
+    }
+
     return balance;
 }
 
