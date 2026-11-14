@@ -134,6 +134,61 @@ int playRound(int balance)
     if (playerBlackjack)
         cout << "Blackjack!\n";
 
+
+    // PLAYER'S TURN
+
+    while (playerScore < 21)
+    {
+        cout << "\n1. Hit\n";
+        cout << "2. Stand\n";
+
+        cout << "Choose an option: ";
+
+        int action = getNumber();
+
+
+        if (action == 1)
+        {
+            // Giving another card
+            playerCards[playerCount] = nextCard;
+            playerCount++;
+            nextCard++;
+
+            cout << "\nYou received: ";
+
+            showCard(
+                playerCards[playerCount - 1], ranks, suits
+            );
+
+            cout << endl;
+
+
+            // Updating score
+            playerScore = calculateScore(
+                playerCards, playerCount, values, ranks
+            );
+
+            cout << "Your score: " << playerScore << endl;
+
+            if (playerScore > 21)
+                cout << "You went over 21. You busted!\n";
+        }
+
+        else if (action == 2)
+        {
+            break;
+        }
+
+        else
+        {
+            cout << "Invalid option. Choose 1 or 2.\n";
+        }
+
+
+        if (nextCard >= 52)
+            break;
+    }
+
     return balance;
 }
 
