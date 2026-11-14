@@ -43,6 +43,97 @@ void showRules()
 // Playing one round
 int playRound(int balance)
 {
+    if (balance <= 0)
+    {
+        cout << "You have no chips left. You cannot place another bet.\n";
+        return balance;
+    }
+
+    int bet;
+
+    cout << "\nYour chip balance: " << balance << endl;
+    cout << "Enter your bet (1 to " << balance << "): ";
+
+    // Checking the bet
+    while (true)
+    {
+        bet = getNumber();
+
+        if (bet >= 1 && bet <= balance)
+            break;
+
+        cout << "Invalid bet. Enter an amount from 1 to "
+            << balance << ": ";
+    }
+
+
+    // Deck arrays
+    string ranks[52];
+    string suits[52];
+    int values[52];
+
+    // Player and dealer card arrays
+    int playerCards[52];
+    int dealerCards[52];
+
+    int playerCount = 0;
+    int dealerCount = 0;
+
+    int nextCard = 0;
+
+
+    // Creating and shuffling deck
+    createDeck(ranks, suits, values);
+    shuffleDeck(ranks, suits, values);
+
+
+    // Dealing two cards to player and dealer
+
+    playerCards[playerCount] = nextCard;
+    playerCount++;
+    nextCard++;
+
+    dealerCards[dealerCount] = nextCard;
+    dealerCount++;
+    nextCard++;
+
+    playerCards[playerCount] = nextCard;
+    playerCount++;
+    nextCard++;
+
+    dealerCards[dealerCount] = nextCard;
+    dealerCount++;
+    nextCard++;
+
+
+    // Displaying initial cards
+    cout << "\nYour cards:\n";
+
+    showPlayerHand(playerCards, playerCount, ranks, suits);
+
+    int playerScore = calculateScore(
+        playerCards, playerCount, values, ranks
+    );
+
+    cout << "Your score: " << playerScore << endl;
+
+
+    cout << "\nDealer's cards:\n";
+
+    showDealerHand(
+        dealerCards, dealerCount, ranks, suits, true
+    );
+
+    cout << "Dealer's visible score: "
+        << values[dealerCards[0]] << endl;
+
+
+    // Checking initial Blackjack
+    bool playerBlackjack = (playerScore == 21 && playerCount == 2);
+
+    if (playerBlackjack)
+        cout << "Blackjack!\n";
+
     return balance;
 }
 
