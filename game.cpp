@@ -61,3 +61,61 @@ void shuffleDeck(string ranks[], string suits[], int values[])
     }
 }
 
+
+// Displaying one card
+void showCard(int cardNumber, string ranks[], string suits[])
+{
+    cout << ranks[cardNumber] << " of " << suits[cardNumber];
+}
+
+
+// Displaying player's cards
+void showPlayerHand(int hand[], int handCount, string ranks[], string suits[])
+{
+    for (int i = 0; i < handCount; i++)
+    {
+        showCard(hand[i], ranks, suits);
+        cout << endl;
+    }
+}
+
+
+// Displaying dealer's cards
+void showDealerHand(int hand[], int handCount,
+    string ranks[], string suits[], bool hideSecondCard)
+{
+    for (int i = 0; i < handCount; i++)
+    {
+        if (hideSecondCard && i == 1)
+            cout << "Hidden card";
+        else
+            showCard(hand[i], ranks, suits);
+
+        cout << endl;
+    }
+}
+
+
+// Calculating the total score
+int calculateScore(int hand[], int handCount, int values[], string ranks[])
+{
+    int total = 0;
+    int aceCount = 0;
+
+    for (int i = 0; i < handCount; i++)
+    {
+        total = total + values[hand[i]];
+
+        if (ranks[hand[i]] == "A")
+            aceCount++;
+    }
+
+    // Changing Ace from 11 to 1 when necessary
+    while (total > 21 && aceCount > 0)
+    {
+        total = total - 10;
+        aceCount--;
+    }
+
+    return total;
+}
