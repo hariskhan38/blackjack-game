@@ -231,9 +231,67 @@ int playRound(int balance)
         cout << "Dealer's score: " << dealerScore << endl;
     }
 
+
+    // FINAL RESULT
+
+    cout << "\nFINAL RESULTS\n";
+
+    cout << "Your score: " << playerScore << endl;
+    cout << "Dealer's score: " << dealerScore << endl;
+
+
+    if (playerScore > 21)
+    {
+        cout << "You lose this round.\n";
+
+        balance = balance - bet;
+    }
+
+    else if (playerBlackjack && !dealerBlackjack)
+    {
+        cout << "You win with Blackjack!\n";
+
+        balance = balance + bet;
+    }
+
+    else if (dealerBlackjack && !playerBlackjack)
+    {
+        cout << "Dealer has Blackjack. You lose this round.\n";
+
+        balance = balance - bet;
+    }
+
+    else if (dealerScore > 21)
+    {
+        cout << "Dealer busted. You win!\n";
+
+        balance = balance + bet;
+    }
+
+    else if (playerScore > dealerScore)
+    {
+        cout << "You win this round!\n";
+
+        balance = balance + bet;
+    }
+
+    else if (playerScore == dealerScore)
+    {
+        cout << "It's a draw. Your bet is returned.\n";
+    }
+
+    else
+    {
+        cout << "Dealer wins this round.\n";
+
+        balance = balance - bet;
+    }
+
+
+    cout << "Updated chip balance: " << balance << endl;
+
     return balance;
 }
-
 
 
 // MAIN FUNCTION
