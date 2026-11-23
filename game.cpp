@@ -1,10 +1,9 @@
-
 #include <iostream>
 #include <cstdlib>
+#include <fstream>
 #include "game.h"
 
 using namespace std;
-
 
 // Creating 52 cards
 void createDeck(string ranks[], string suits[], int values[])
@@ -118,4 +117,147 @@ int calculateScore(int hand[], int handCount, int values[], string ranks[])
     }
 
     return total;
+}
+
+
+// Loading saved balance and high score
+void loadData(int& balance, int& highScore)
+{
+    balance = 1000;
+    highScore = 1000;
+
+    ifstream file("playerData.txt");
+
+    if (file.is_open())
+    {
+        file >> balance;
+        file >> highScore;
+
+        file.close();
+    }
+}
+
+
+// Saving balance and high score
+void saveData(int balance, int highScore)
+{
+    ofstream file("playerData.txt");
+
+    if (file.is_open())
+    {
+        file << balance << endl;
+        file << highScore << endl;
+
+        file.close();
+    }
+}
+
+
+// Displaying highest score
+string highScoreText(int highScore)
+{
+    return "Highest chip balance: " + to_string(highScore);
+}
+
+void showHighScore(int highScore)
+{
+    cout << "\n===== HIGH SCORE =====\n";
+
+    cout << highScoreText(highScore) << endl;
+}
+
+
+// Displaying game statistics
+string statisticsText(int totalRounds, int wins, int losses)
+{
+    return "Total rounds: " + to_string(totalRounds) + "\n"
+        + "Winning rounds: " + to_string(wins) + "\n"
+        + "Losing rounds: " + to_string(losses);
+}
+
+void showStatistics(int totalRounds, int wins, int losses)
+{
+    cout << "\n===== GAME STATISTICS =====\n";
+
+    cout << statisticsText(totalRounds, wins, losses) << endl;
+}
+
+
+// Giving the next card of the deck to a hand
+void dealCard(int hand[], int& handCount, int& nextCard)
+{
+    hand[handCount] = nextCard;
+    handCount++;
+    nextCard++;
+}
+
+
+// Starting a round: new shuffled deck and two cards for each side
+void startRound(string ranks[], string suits[], int values[],
+    int playerCards[], int& playerCount,
+    int dealerCards[], int& dealerCount, int& nextCard)
+{
+    playerCount = 0;
+    dealerCount = 0;
+    nextCard = 0;
+
+    createDeck(ranks, suits, values);
+    shuffleDeck(ranks, suits, values);
+
+    dealCard(playerCards, playerCount, nextCard);
+    dealCard(dealerCards, dealerCount, nextCard);
+    dealCard(playerCards, playerCount, nextCard);
+    dealCard(dealerCards, dealerCount, nextCard);
+}
+
+
+// Dealer keeps drawing until reaching 17
+bool dealerMustDraw(int dealerScore, int playerScore, int nextCard)
+{
+    return (playerScore <= 21 && dealerScore < 17 && nextCard < 52);
+}
+
+
+// Deciding the result: 1 = player wins, 0 = draw, -1 = player loses
+int getResult(int playerScore, int dealerScore,
+    bool playerBlackjack, bool dealerBlackjack)
+{
+    if (playerScore > 21)
+        return -1;
+
+    if (playerBlackjack && !dealerBlackjack)
+        return 1;
+
+    if (dealerBlackjack && !playerBlackjack)
+        return -1;
+
+    if (dealerScore > 21)
+        return 1;
+
+    if (playerScore > dealerScore)
+        return 1;
+
+    if (playerScore == dealerScore)
+        return 0;
+
+    return -1;
+}
+
+
+// Updating balance and statistics after a round
+void updateResult(int result, int bet, int& balance,
+    int& totalRounds, int& wins, int& losses)
+{
+    totalRounds++;
+
+    if (result == 1)
+    {
+        balance = balance + bet;
+        wins++;
+    }
+    else if (result == -1)
+    {
+        balance = balance - bet;
+        losses++;
+    }
 }
