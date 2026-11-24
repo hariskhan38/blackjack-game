@@ -1,0 +1,14 @@
+External Libraries Used
+
+1. SFML (Simple and Fast Multimedia Library)
+   Version: 2.6.2
+   Purpose: Used for graphics, window creation, and graphical user interface.
+
+2. SFML Modules:
+   - sfml-graphics
+   - sfml-window
+   - sfml-system
+
+Compiler/IDE:
+- Visual Studio 2026
+- C++20

@@ -403,11 +403,10 @@ int main()
     int losses = 0;
 
 
-    
     runGui(balance, highScore, totalRounds, wins, losses);
-
 
     saveData(balance, highScore);
 
     return 0;
+
 }
