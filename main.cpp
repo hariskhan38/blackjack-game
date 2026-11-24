@@ -1,11 +1,9 @@
-
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
 #include "game.h"
 
 using namespace std;
-
 
 // Taking valid numeric input
 int getNumber()
@@ -24,24 +22,31 @@ int getNumber()
 }
 
 
+// Text of the game instructions (used by the console and the window)
+string rulesText()
+{
+    return "1. Try to get a score as close to 21 as possible.\n"
+        "2. Do not go above 21.\n"
+        "3. Number cards have their face value.\n"
+        "4. J, Q and K are worth 10 points.\n"
+        "5. An Ace is worth 1 or 11 points.\n"
+        "6. Choose Hit to take another card or Stand to stop.\n"
+        "7. The dealer draws until reaching at least 17.\n"
+        "8. The higher score wins. Equal scores mean a draw.\n";
+}
+
+
 // Displaying game instructions
 void showRules()
 {
     cout << "\nBLACKJACK RULES\n";
 
-    cout << "1. Try to get a score as close to 21 as possible.\n";
-    cout << "2. Do not go above 21.\n";
-    cout << "3. Number cards have their face value.\n";
-    cout << "4. J, Q and K are worth 10 points.\n";
-    cout << "5. An Ace is worth 1 or 11 points.\n";
-    cout << "6. Choose Hit to take another card or Stand to stop.\n";
-    cout << "7. The dealer draws until reaching at least 17.\n";
-    cout << "8. The higher score wins. Equal scores mean a draw.\n";
+    cout << rulesText();
 }
 
 
 // Playing one round
-int playRound(int balance)
+int playRound(int balance, int& totalRounds, int& wins, int& losses)
 {
     if (balance <= 0)
     {
@@ -232,7 +237,7 @@ int playRound(int balance)
     }
 
 
-    // FINAL RESULT
+    // FINAL RESULTS
 
     cout << "\nFINAL RESULTS\n";
 
@@ -240,11 +245,14 @@ int playRound(int balance)
     cout << "Dealer's score: " << dealerScore << endl;
 
 
+    totalRounds++;
+
     if (playerScore > 21)
     {
         cout << "You lose this round.\n";
 
         balance = balance - bet;
+        losses++;
     }
 
     else if (playerBlackjack && !dealerBlackjack)
@@ -252,6 +260,7 @@ int playRound(int balance)
         cout << "You win with Blackjack!\n";
 
         balance = balance + bet;
+        wins++;
     }
 
     else if (dealerBlackjack && !playerBlackjack)
@@ -259,6 +268,7 @@ int playRound(int balance)
         cout << "Dealer has Blackjack. You lose this round.\n";
 
         balance = balance - bet;
+        losses++;
     }
 
     else if (dealerScore > 21)
@@ -266,6 +276,7 @@ int playRound(int balance)
         cout << "Dealer busted. You win!\n";
 
         balance = balance + bet;
+        wins++;
     }
 
     else if (playerScore > dealerScore)
@@ -273,6 +284,7 @@ int playRound(int balance)
         cout << "You win this round!\n";
 
         balance = balance + bet;
+        wins++;
     }
 
     else if (playerScore == dealerScore)
@@ -285,6 +297,7 @@ int playRound(int balance)
         cout << "Dealer wins this round.\n";
 
         balance = balance - bet;
+        losses++;
     }
 
 
@@ -294,12 +307,10 @@ int playRound(int balance)
 }
 
 
-// MAIN FUNCTION
-int main()
+// Console version of the game menu
+void runConsole(int& balance, int& highScore,
+    int& totalRounds, int& wins, int& losses)
 {
-    srand((unsigned int)time(0));
-
-    int balance = 1000;
     int choice;
 
 
@@ -314,7 +325,9 @@ int main()
 
         cout << "1. Play Game\n";
         cout << "2. How to Play\n";
-        cout << "3. Exit\n";
+        cout << "3. View High Score\n";
+        cout << "4. Game Statistics\n";
+        cout << "5. Exit\n";
 
         cout << "Choose an option: ";
 
@@ -323,7 +336,16 @@ int main()
 
         if (choice == 1)
         {
-            balance = playRound(balance);
+            balance = playRound(
+                balance, totalRounds, wins, losses
+            );
+
+            // Updating highest score
+            if (balance > highScore)
+                highScore = balance;
+
+            // Saving data after every round
+            saveData(balance, highScore);
         }
 
         else if (choice == 2)
@@ -333,8 +355,19 @@ int main()
 
         else if (choice == 3)
         {
-            cout << "\nThanks for playing Blackjack!\n";
+            showHighScore(highScore);
+        }
 
+        else if (choice == 4)
+        {
+            showStatistics(totalRounds, wins, losses);
+        }
+
+        else if (choice == 5)
+        {
+            saveData(balance, highScore);
+
+            cout << "\nThanks for playing Blackjack!\n";
             cout << "Final chip balance: " << balance << endl;
 
             break;
@@ -342,9 +375,39 @@ int main()
 
         else
         {
-            cout << "Invalid option. Please choose 1, 2 or 3.\n";
+            cout << "Invalid option. Please choose 1 to 5.\n";
         }
     }
+
+}
+
+
+// MAIN FUNCTION
+int main()
+{
+    srand((unsigned int)time(0));
+
+    int balance;
+    int highScore;
+
+    // Loading previous game data
+    loadData(balance, highScore);
+
+    if (balance > highScore)
+        highScore = balance;
+
+
+    // Game statistics
+    int totalRounds = 0;
+    int wins = 0;
+    int losses = 0;
+
+
+    
+    runGui(balance, highScore, totalRounds, wins, losses);
+
+
+    saveData(balance, highScore);
 
     return 0;
 }
